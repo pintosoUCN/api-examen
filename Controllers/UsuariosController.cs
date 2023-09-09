@@ -38,13 +38,13 @@ public class UsuariosController : ControllerBase
 
     // Crear un nuevo usuario
     [HttpPost]
-    public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
-    {
-        _context.Usuarios.Add(usuario);
-        await _context.SaveChangesAsync();
+public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
+{
+    _context.Usuarios.Add(usuario);
+    await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetUsuario), new { id = usuario.UsuarioID }, usuario);
-    }
+    return CreatedAtAction(nameof(GetUsuario), new { id = usuario.UsuarioID }, usuario);
+}
 
     // Actualizar un usuario existente
     [HttpPut("{id}")]
@@ -87,7 +87,13 @@ public class UsuariosController : ControllerBase
             return NotFound();
         }
 
+        // Eliminar las reservas asociadas al usuario
+        var reservasDelUsuario = _context.Reservas.Where(r => r.UsuarioID == id);
+        _context.Reservas.RemoveRange(reservasDelUsuario);
+
+        // Eliminar al usuario
         _context.Usuarios.Remove(usuario);
+
         await _context.SaveChangesAsync();
 
         return NoContent();
